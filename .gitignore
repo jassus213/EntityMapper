@@ -1,0 +1,14 @@
+
+.idea/
+
+EntityMapper/bin/
+
+EntityMapper/obj/
+
+EntityMapper.ServiceCollection.Extension/bin/
+
+EntityMapper.ServiceCollection.Extension/obj/
+
+EntityMapper.Unit/bin/
+
+EntityMapper.Unit/obj/
