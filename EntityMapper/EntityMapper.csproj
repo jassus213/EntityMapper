@@ -5,9 +5,16 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>EntityMapper</RootNamespace>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
 
+    <ItemGroup>
+      <ProjectReference Include="..\EntityMapper.Configuration\EntityMapper.Configuration.csproj" />
+    </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\EntityMapper.Configuration\EntityMapper.Configuration.csproj" />
+    </ItemGroup>
 
 </Project>

@@ -16,3 +16,7 @@ EntityMapper.Unit/obj/
 *.nupkg
 
 *.nuspec
+
+EntityMapper.Configuration/bin/
+
+EntityMapper.Configuration/obj/

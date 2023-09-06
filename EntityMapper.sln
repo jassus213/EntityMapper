@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityMapper.Unit", "Entity
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityMapper.ServiceCollection.Extension", "EntityMapper.ServiceCollection.Extension\EntityMapper.ServiceCollection.Extension.csproj", "{D089D98A-C749-4F23-ADFF-CF0AD87962B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityMapper.Configuration", "EntityMapper.Configuration\EntityMapper.Configuration.csproj", "{D7393E95-E09F-4166-968C-89EF7D718285}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{D089D98A-C749-4F23-ADFF-CF0AD87962B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D089D98A-C749-4F23-ADFF-CF0AD87962B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D089D98A-C749-4F23-ADFF-CF0AD87962B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7393E95-E09F-4166-968C-89EF7D718285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7393E95-E09F-4166-968C-89EF7D718285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7393E95-E09F-4166-968C-89EF7D718285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7393E95-E09F-4166-968C-89EF7D718285}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
