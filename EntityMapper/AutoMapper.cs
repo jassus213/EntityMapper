@@ -4,22 +4,22 @@ namespace EntityMapper;
 
 public class AutoMapper : IMapper
 {
-    private readonly Dictionary<KeyValuePair<Type, Type>, Delegate> _configurations =
-        new Dictionary<KeyValuePair<Type, Type>, Delegate>();
+    private readonly Dictionary<ValueTuple<Type, Type>, Delegate> _configurations =
+        new Dictionary<ValueTuple<Type, Type>, Delegate>();
 
-    public TDto Map<T, TDto>(T dto) where T : new() 
+    public TDto Map<T, TDto>(T entity) where T : new() 
         where TDto : new()
     {
-        var kvp = new KeyValuePair<Type, Type>(typeof(T), typeof(TDto));
+        var kvp = new ValueTuple<Type, Type>(typeof(T), typeof(TDto));
         if (_configurations.TryGetValue(kvp, out var deleg))
         {
             var func = (Func<T, TDto>)deleg;
-            return func(dto);
+            return func(entity);
         }
 
-        throw new Exception("Missing Configuration");
+        throw new Exception($"Missing Configuration For {typeof(T)} and {typeof(TDto)}");
     }
 
     public void AddConfiguration<TDto, T>(Func<T, TDto> configuration) =>
-        _configurations.Add(new KeyValuePair<Type, Type>(typeof(T), typeof(TDto)), configuration);
+        _configurations.Add(new ValueTuple<Type, Type>(typeof(T), typeof(TDto)), configuration);
 }

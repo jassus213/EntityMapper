@@ -12,3 +12,5 @@ EntityMapper.ServiceCollection.Extension/obj/
 EntityMapper.Unit/bin/
 
 EntityMapper.Unit/obj/
+
+*.nupkg

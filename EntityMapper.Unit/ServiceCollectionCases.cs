@@ -10,14 +10,14 @@ public class ServiceCollectionCases
     [Test]
     public void Good_Registration()
     {
-        var serviceCollection = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var serviceCollection = new ServiceCollection();
         var mapper = serviceCollection.UseMapper();
         mapper.AddMapperConfiguration<User, UserDto>((user) => new UserDto()
         {
             Id = user.Id,
             Name = user.Name
         });
-
+        
         var user = new User()
         {
             Id = 25,
@@ -36,7 +36,7 @@ public class ServiceCollectionCases
     [Test]
     public void Good_Registration_ByInterface()
     {
-        var serviceCollection = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var serviceCollection = new ServiceCollection();
         var mapper = serviceCollection.UseMapper();
         mapper.AddMapperConfiguration<User, UserDto>((user) => new UserDto()
         {
