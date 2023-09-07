@@ -56,7 +56,7 @@ public class MapperCases
             Name = "Nikita",
             LastName = "Okhotnikov"
         };
-        
+
         var userDto = interfaceMapper.Map<UserStrange, UserDtoStrange>(user);
         Assert.Multiple(() =>
         {
@@ -66,7 +66,7 @@ public class MapperCases
             Assert.That(userDto.FullName, Is.EqualTo($"{user.Name} {user.LastName}"));
         });
     }
-    
+
     [Test]
     public void Not_Default_Case()
     {
@@ -80,14 +80,47 @@ public class MapperCases
         var serviceProvider = serviceCollection.BuildServiceProvider();
         var interfaceMapper = serviceProvider.GetRequiredService<IMapper>();
 
-         var user = new UserStrange()
+        var user = new UserStrange()
         {
             Id = 25,
             Name = "Nikita",
             LastName = "Okhotnikov"
         };
-        
+
         var userDto = interfaceMapper.Map<UserStrange, UserDtoStrange>(user);
+        Assert.Multiple(() =>
+        {
+            Assert.That(interfaceMapper, Is.EqualTo(entityMapper));
+            Assert.That(userDto, Is.Not.Null);
+            Assert.That(userDto.Id, Is.EqualTo(user.Id));
+            Assert.That(userDto.FullName, Is.EqualTo($"{user.Name} {user.LastName}"));
+        });
+    }
+
+    [Test]
+    public async Task Good_AsyncConfiguration()
+    {
+        var serviceCollection = new ServiceCollection();
+        var entityMapper = serviceCollection.UseMapper();
+        entityMapper.AddAsyncConfiguration<UserStrange, UserDtoStrange>(async (user) =>
+        {
+            await Task.Delay(1000);
+            return new UserDtoStrange()
+            {
+                Id = user.Id,
+                FullName = $"{user.Name} {user.LastName}"
+            };
+        });
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var interfaceMapper = serviceProvider.GetRequiredService<IMapper>();
+        var user = new UserStrange()
+        {
+            Id = 25,
+            Name = "Nikita",
+            LastName = "Okhotnikov"
+        };
+
+        var userDto = await interfaceMapper.MapAsync<UserStrange, UserDtoStrange>(user);
         Assert.Multiple(() =>
         {
             Assert.That(interfaceMapper, Is.EqualTo(entityMapper));

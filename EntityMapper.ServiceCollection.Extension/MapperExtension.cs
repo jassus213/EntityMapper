@@ -18,4 +18,8 @@ public static class MapperExtension
 
     public static void AddDisposableMapperConfiguration<T, TDto>(this EntityMapper entityMapper,
         Func<T, TDto> configurationFunc) => entityMapper.AddDisposableConfiguration(configurationFunc);
+
+    public static void AddAsyncMapperConfiguration<TSource, TDestination>(this EntityMapper entityMapper,
+        Func<TSource, Task<TDestination>> configuration) =>
+        entityMapper.AddAsyncConfiguration(configuration);
 }

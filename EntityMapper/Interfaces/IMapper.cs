@@ -2,5 +2,6 @@
 
 public interface IMapper
 {
-    TDto Map<T, TDto>(T entity) where T : new() where TDto : new();
+    TDestination Map<TSource, TDestination>(TSource entity) where TSource : new() where TDestination : new();
+    Task<TDestination> MapAsync<TSource, TDestination>(TSource source) where TSource : new();
 }
