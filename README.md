@@ -1,4 +1,5 @@
 # EntityMapper Documentation
+![Static Badge](https://img.shields.io/badge/latest_version-1.1.1-blue) ![Static Badge](https://img.shields.io/badge/license-MIT-green)
 ## Introducion
 EntityMapper is a powerful and flexible object-to-object mapping library for .NET applications. It simplifies the process of mapping one object's properties to another, allowing you to focus on writing clean and maintainable code.
 This documentation provides a detailed guide on how to use EntityMapper in your .NET projects. It covers the basic setup, configuration, mapping, and integration with the `ServiceCollection`.
