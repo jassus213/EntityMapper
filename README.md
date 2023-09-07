@@ -46,6 +46,18 @@ EntityMapper.AddConfiguration<UserDto, User>((user) => new UserDto()
 });
 ```
 This code sets up a mapping from User objects to UserDto objects. It specifies how properties should be mapped from the source (User) to the destination (`UserDto`).
+## Disposable Mapper Configurations
+AutoMapper traditionally uses a global configuration to define how objects of one type should be mapped to another. While this approach works well for most cases, it can lead to memory overhead when configuring mappings that are seldom used, especially in applications where memory efficiency is crucial.
+
+To address this issue, AutoMapper introduced Disposable Mapper Configurations. This feature allows you to define and configure a mapping for a specific use case, and once that mapping is no longer needed, it is automatically disposed of. This can be particularly beneficial for scenarios where you want to minimize memory consumption, such as handling infrequent or specialized mappings.
+```c#
+entityMapper.AddDisposableMapperConfiguration<User, UserDto>((user) => new UserDto()
+{
+    Id = user.Id,
+    Name = user.Name
+});
+```
+In this code snippet, we define a mapping from the User class to the UserDto class. The unique aspect is that this mapping is treated as disposable. Once the mapping has been used (typically after the first request), AutoMapper automatically disposes of it, freeing up any resources associated with it.
 
 ## Mapping Objects
 Once you have configured EntityMapper, you can easily map objects using the Map method.
