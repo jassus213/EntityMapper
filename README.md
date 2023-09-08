@@ -39,8 +39,8 @@ This command will download and install EntityMapper and its dependencies into yo
 ## Basic Configuration
 EntityMapper provides a straightforward way to configure object mapping. You can create a mapping configuration using the EntityMapper class and the AddConfiguration method.
 ```c#
-var EntityMapper = new EntityMapper();
-EntityMapper.AddConfiguration<UserDto, User>((user) => new UserDto()
+var entityMapper = new EntityMapper();
+entityMapper.AddConfiguration<UserDto, User>((user) => new UserDto()
 {
     Id = user.Id,
     Name = user.Name
@@ -48,9 +48,9 @@ EntityMapper.AddConfiguration<UserDto, User>((user) => new UserDto()
 ```
 This code sets up a mapping from User objects to UserDto objects. It specifies how properties should be mapped from the source (User) to the destination (`UserDto`).
 ## Disposable Mapper Configurations
-AutoMapper traditionally uses a global configuration to define how objects of one type should be mapped to another. While this approach works well for most cases, it can lead to memory overhead when configuring mappings that are seldom used, especially in applications where memory efficiency is crucial.
+EntityMapper traditionally uses a global configuration to define how objects of one type should be mapped to another. While this approach works well for most cases, it can lead to memory overhead when configuring mappings that are seldom used, especially in applications where memory efficiency is crucial.
 
-To address this issue, AutoMapper introduced Disposable Mapper Configurations. This feature allows you to define and configure a mapping for a specific use case, and once that mapping is no longer needed, it is automatically disposed of. This can be particularly beneficial for scenarios where you want to minimize memory consumption, such as handling infrequent or specialized mappings.
+To address this issue, EntityMapper introduced Disposable Mapper Configurations. This feature allows you to define and configure a mapping for a specific use case, and once that mapping is no longer needed, it is automatically disposed of. This can be particularly beneficial for scenarios where you want to minimize memory consumption, such as handling infrequent or specialized mappings.
 ```c#
 entityMapper.AddDisposableMapperConfiguration<User, UserDto>((user) => new UserDto()
 {
@@ -58,9 +58,9 @@ entityMapper.AddDisposableMapperConfiguration<User, UserDto>((user) => new UserD
     Name = user.Name
 });
 ```
-In this code snippet, we define a mapping from the User class to the UserDto class. The unique aspect is that this mapping is treated as disposable. Once the mapping has been used (typically after the first request), AutoMapper automatically disposes of it, freeing up any resources associated with it.
+In this code snippet, we define a mapping from the User class to the UserDto class. The unique aspect is that this mapping is treated as disposable. Once the mapping has been used (typically after the first request), EntityMapper automatically disposes of it, freeing up any resources associated with it.
 ## Asynchronous Configuration
-AutoMapper provides the capability to define asynchronous mapping functions, allowing you to perform asynchronous operations during the mapping process. This is achieved by using asynchronous delegates (lambda expressions) in the `AddAsyncMapperConfiguration` method. Let's look at an example of using asynchronous configuration:
+EntityMapper provides the capability to define asynchronous mapping functions, allowing you to perform asynchronous operations during the mapping process. This is achieved by using asynchronous delegates (lambda expressions) in the `AddAsyncMapperConfiguration` method. Let's look at an example of using asynchronous configuration:
 ```c#
 entityMapper.AddAsyncMapperConfiguration<User, UserDto>(async (user) =>
 {
@@ -77,6 +77,31 @@ entityMapper.AddAsyncMapperConfiguration<User, UserDto>(async (user) =>
 ```
 In this example, we create an asynchronous mapping configuration between the UserStrange and UserDtoStrange types. Inside the lambda expression, we use the async keyword to define an asynchronous mapping function. Within the mapping function, we perform an asynchronous operation, such as Task.Delay, to introduce an artificial delay of 500 milliseconds. Then, we create a UserDtoStrange object with data retrieved asynchronously.
 
+## Bidirectional Mapping Configuration
+EntityMapper simplifies bidirectional mapping by allowing you to set up mappings in both directions using a single configuration. Let's examine an example of bidirectional mapping configuration:
+```c#
+var user = new User()
+{
+    Id = 20,
+    Name = "Test Name"
+};
+
+entityMapper.AddABidirectionalMapperConfiguration<User, UserDto>((user) => new UserDto()
+{
+    Id = user.Id,
+    Name = user.Name
+});
+
+var dto = entityMapper.Map<User, UserDto>(user);
+var userNew = entityMapper.Map<UserDto, User>(dto);
+```
+In this code snippet, we perform the following steps:
+1. We create a User object with some initial data.
+2. We use the AddABidirectionalMapperConfiguration method to configure bidirectional mapping between User and UserDto. This method accepts a mapping function that defines how User objects are mapped to UserDto objects.
+3. We use the Map method to map a User object (user) to a UserDto object (dto).
+4. Finally, we use the Map method again to map the UserDto object (dto) back to a User object (userNew).
+The bidirectional mapping configuration allows you to effortlessly switch between User and UserDto objects while maintaining the integrity of your data.
+
 ## Mapping Objects
 Once you have configured EntityMapper, you can easily map objects using the Map method.
 ```c#
@@ -88,8 +113,8 @@ In this example, we map a User object to a UserDto object, and EntityMapper take
 EntityMapper can be integrated with the ServiceCollection in ASP.NET Core applications to enable dependency injection of mappers. Here's how to set it up:
 ```c#
 var serviceCollection = new ServiceCollection();
-var mapper = serviceCollection.UseMapper();
-mapper.AddMapperConfiguration<User, UserDto>((user) => new UserDto()
+var entityMapper = serviceCollection.UseMapper();
+entityMapper.AddMapperConfiguration<User, UserDto>((user) => new UserDto()
 {
     Id = user.Id,
     Name = user.Name
