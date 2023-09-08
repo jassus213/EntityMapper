@@ -7,7 +7,7 @@ namespace EntityMapper;
 /// <summary>
 /// Call the Map method if you need to map from one object to another
 /// </summary>
-public class EntityMapper : IMapper
+public class EntityMapper : IMapper, IMapperConfigurator
 {
     private readonly Dictionary<ValueTuple<Type, Type>, Configuration.Configuration> _configurations =
         new Dictionary<(Type, Type), Configuration.Configuration>();
@@ -70,9 +70,11 @@ public class EntityMapper : IMapper
     public void AddBidirectionalMapping<TSource, TDestination>(Expression<Func<TSource, TDestination>> expression)
     {
         var body = expression.Body.ReduceExtensions();
+        var sourceType = typeof(TSource);
+        var destinationType = typeof(TDestination);
 
-        var sourceParam = Expression.Parameter(typeof(TSource), typeof(TSource).Name);
-        var destinationParam = Expression.Parameter(typeof(TDestination), typeof(TDestination).Name);
+        var sourceParam = Expression.Parameter(sourceType, sourceType.Name);
+        var destinationParam = Expression.Parameter(destinationType, destinationType.Name);
 
         var memberInitExpression = (MemberInitExpression)body;
 
@@ -94,16 +96,16 @@ public class EntityMapper : IMapper
             }
         }
 
-        var reversedMemberInit = Expression.MemberInit(Expression.New(typeof(TSource)), reversedBindings);
+        var reversedMemberInit = Expression.MemberInit(Expression.New(sourceType), reversedBindings);
 
         var reversedLambda = Expression.Lambda<Func<TDestination, TSource>>(reversedMemberInit, destinationParam);
         var reversedConfiguration = reversedLambda.Compile();
         
 
-        _configurations.Add(new ValueTuple<Type, Type>(typeof(TSource), typeof(TDestination)),
+        _configurations.Add(new ValueTuple<Type, Type>(sourceType, destinationType),
             new Configuration.Configuration(expression.Compile()));
 
-        _configurations.Add(new ValueTuple<Type, Type>(typeof(TDestination), typeof(TSource)),
+        _configurations.Add(new ValueTuple<Type, Type>(destinationType, sourceType),
             new Configuration.Configuration(reversedConfiguration));
     }
 }

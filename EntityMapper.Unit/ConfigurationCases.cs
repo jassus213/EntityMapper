@@ -152,13 +152,16 @@ public class ConfigurationCases
     public async Task Async_Missing_Configuration()
     {
         var serviceCollection = new ServiceCollection();
-        var entityMapper = serviceCollection.UseMapper();
+        var mapperConfigurator= serviceCollection.UseMapper();
         var user = new User()
         {
             Id = 25,
             Name = "Nikita",
         };
 
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
+        var entityMapper = serviceProvider.GetRequiredService<IMapper>();
+        
         var exception = Assert.CatchAsync<Exception>(async () => await entityMapper.MapAsync<User, UserDto>(user));
         Assert.Multiple(() =>
         {
@@ -173,16 +176,18 @@ public class ConfigurationCases
     public void BidirectionalMapping_Good()
     {
         var serviceCollection = new ServiceCollection();
-        var entityMapper = serviceCollection.UseMapper();
+        var mapperConfigurator = serviceCollection.UseMapper();
         var user = new User()
         {
             Id = 20,
             Name = "Test Name"
         };
         
-        entityMapper.AddBidirectionalMapping<User, UserDto>((user) => new UserDto() { Id = user.Id, Name = user.Name });
-        var dto = entityMapper.Map<User, UserDto>(user);
-        var userNew = entityMapper.Map<UserDto, User>(dto);
+        mapperConfigurator.AddBidirectionalMapping<User, UserDto>(user => new UserDto() { Id = user.Id, Name = user.Name });
+        using var serviceProvider = serviceCollection.BuildServiceProvider();
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        var dto = mapper.Map<User, UserDto>(user);
+        var userNew = mapper.Map<UserDto, User>(dto);
 
         var userDto = new UserDto()
         {
@@ -190,7 +195,7 @@ public class ConfigurationCases
             Name = "User Dto New To User"
         };
 
-        var userTest = entityMapper.Map<UserDto, User>(userDto);
+        var userTest = mapper.Map<UserDto, User>(userDto);
         
         Assert.Multiple(() =>
         {
