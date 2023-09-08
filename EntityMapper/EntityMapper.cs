@@ -1,4 +1,6 @@
-﻿using EntityMapper.Interfaces;
+﻿using System.Linq.Expressions;
+using System.Reflection;
+using EntityMapper.Interfaces;
 
 namespace EntityMapper;
 
@@ -42,7 +44,7 @@ public class EntityMapper : IMapper
             var configurationFunc = configuration.ConfigurationFunc as Func<TSource, Task<TDestination>>;
             if (configurationFunc == null)
                 throw new Exception("Is Not Async Configuration");
-            
+
             // TODO Async Disposable Configuration
 
             return await configurationFunc(source);
@@ -64,4 +66,44 @@ public class EntityMapper : IMapper
     public void AddAsyncConfiguration<TSource, TDestination>(Func<TSource, Task<TDestination>> configuration) =>
         _configurations.Add(new ValueTuple<Type, Type>(typeof(TSource), typeof(TDestination)),
             new Configuration.Configuration(configuration));
+
+    public void AddBidirectionalMapping<TSource, TDestination>(Expression<Func<TSource, TDestination>> expression)
+    {
+        var body = expression.Body.ReduceExtensions();
+
+        var sourceParam = Expression.Parameter(typeof(TSource), typeof(TSource).Name);
+        var destinationParam = Expression.Parameter(typeof(TDestination), typeof(TDestination).Name);
+
+        var memberInitExpression = (MemberInitExpression)body;
+
+        var bindings = memberInitExpression.Bindings;
+        var reversedBindings = new List<MemberBinding>(memberInitExpression.Bindings.Count);
+        foreach (var binding in bindings)
+        {
+            if (binding is MemberAssignment memberAssignment)
+            {
+                var memberInfo = memberAssignment.Member;
+                
+                var correspondingProperty = typeof(TSource).GetProperty(memberInfo.Name);
+                if (correspondingProperty != null)
+                {
+                    var propertyAccess = Expression.Property(sourceParam, correspondingProperty);
+                    reversedBindings.Add(Expression.Bind(propertyAccess.Member,
+                        Expression.Property(destinationParam, (PropertyInfo)memberInfo)));
+                }
+            }
+        }
+
+        var reversedMemberInit = Expression.MemberInit(Expression.New(typeof(TSource)), reversedBindings);
+
+        var reversedLambda = Expression.Lambda<Func<TDestination, TSource>>(reversedMemberInit, destinationParam);
+        var reversedConfiguration = reversedLambda.Compile();
+        
+
+        _configurations.Add(new ValueTuple<Type, Type>(typeof(TSource), typeof(TDestination)),
+            new Configuration.Configuration(expression.Compile()));
+
+        _configurations.Add(new ValueTuple<Type, Type>(typeof(TDestination), typeof(TSource)),
+            new Configuration.Configuration(reversedConfiguration));
+    }
 }

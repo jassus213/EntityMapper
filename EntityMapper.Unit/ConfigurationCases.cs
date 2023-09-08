@@ -1,4 +1,5 @@
-﻿using Entity.Unit.Entities.GoodCases;
+﻿using System.Diagnostics;
+using Entity.Unit.Entities.GoodCases;
 using Entity.Unit.Entities.StrangeCases;
 using EntityMapper;
 using EntityMapper.Interfaces;
@@ -43,12 +44,14 @@ public class ConfigurationCases
             Id = 10,
             Name = "Nikita"
         };
-        
+
         var exception = Assert.Catch<Exception>(() => entityMapper.Map<User, UserDto>(user));
         Assert.Multiple(() =>
         {
             Assert.That(exception, Is.Not.Null);
-            Assert.That(exception.Message, Is.EqualTo("Missing Configuration For Entity.Unit.Entities.GoodCases.User and Entity.Unit.Entities.GoodCases.UserDto"));
+            Assert.That(exception.Message,
+                Is.EqualTo(
+                    "Missing Configuration For Entity.Unit.Entities.GoodCases.User and Entity.Unit.Entities.GoodCases.UserDto"));
         });
     }
 
@@ -61,7 +64,7 @@ public class ConfigurationCases
             Id = user.Id,
             Name = user.Name
         });
-        
+
         var user = new User()
         {
             Id = 10,
@@ -75,9 +78,11 @@ public class ConfigurationCases
             Assert.That(userDto, Is.Not.Null);
             Assert.That(user.Id, Is.EqualTo(10));
             Assert.That(userDto.Name, Is.EqualTo("Nikita"));
-            
+
             Assert.That(exception, Is.Not.Null);
-            Assert.That(exception.Message, Is.EqualTo("Missing Configuration For Entity.Unit.Entities.GoodCases.User and Entity.Unit.Entities.GoodCases.UserDto"));
+            Assert.That(exception.Message,
+                Is.EqualTo(
+                    "Missing Configuration For Entity.Unit.Entities.GoodCases.User and Entity.Unit.Entities.GoodCases.UserDto"));
         });
     }
 
@@ -100,14 +105,15 @@ public class ConfigurationCases
             LastName = "Okhotnikov"
         };
 
-        var exception = Assert.CatchAsync(async () => await interfaceMapper.MapAsync<UserStrange, UserDtoStrange>(user));
+        var exception =
+            Assert.CatchAsync(async () => await interfaceMapper.MapAsync<UserStrange, UserDtoStrange>(user));
         Assert.Multiple(() =>
         {
             Assert.That(interfaceMapper, Is.EqualTo(entityMapper));
             Assert.That(exception.Message, Is.EqualTo("Is Not Async Configuration"));
         });
     }
-    
+
     [Test]
     public async Task Good_AsyncConfiguration()
     {
@@ -135,7 +141,7 @@ public class ConfigurationCases
         Assert.Multiple(() =>
         {
             Assert.That(interfaceMapper, Is.EqualTo(entityMapper));
-            
+
             Assert.That(userDto, Is.Not.Null);
             Assert.That(user.Id, Is.EqualTo(25));
             Assert.That(userDto.FullName, Is.EqualTo("Nikita Okhotnikov"));
@@ -152,12 +158,50 @@ public class ConfigurationCases
             Id = 25,
             Name = "Nikita",
         };
-        
+
         var exception = Assert.CatchAsync<Exception>(async () => await entityMapper.MapAsync<User, UserDto>(user));
         Assert.Multiple(() =>
         {
             Assert.That(exception, Is.Not.Null);
-            Assert.That(exception.Message, Is.EqualTo("Missing Configuration For Entity.Unit.Entities.GoodCases.User and Entity.Unit.Entities.GoodCases.UserDto"));
+            Assert.That(exception.Message,
+                Is.EqualTo(
+                    "Missing Configuration For Entity.Unit.Entities.GoodCases.User and Entity.Unit.Entities.GoodCases.UserDto"));
+        });
+    }
+
+    [Test]
+    public void BidirectionalMapping_Good()
+    {
+        var serviceCollection = new ServiceCollection();
+        var entityMapper = serviceCollection.UseMapper();
+        var user = new User()
+        {
+            Id = 20,
+            Name = "Test Name"
+        };
+        
+        entityMapper.AddBidirectionalMapping<User, UserDto>((user) => new UserDto() { Id = user.Id, Name = user.Name });
+        var dto = entityMapper.Map<User, UserDto>(user);
+        var userNew = entityMapper.Map<UserDto, User>(dto);
+
+        var userDto = new UserDto()
+        {
+            Id = 25,
+            Name = "User Dto New To User"
+        };
+
+        var userTest = entityMapper.Map<UserDto, User>(userDto);
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(dto.Id, Is.EqualTo(user.Id));
+            Assert.That(dto.Name, Is.EqualTo(user.Name));
+            
+            Assert.That(userNew.Id, Is.EqualTo(dto.Id));
+            Assert.That(userNew.Name, Is.EqualTo(dto.Name));
+            
+            Assert.That(userTest.Id, Is.EqualTo(25));
+            Assert.That(userTest.Name, Is.EqualTo("User Dto New To User"));
         });
     }
 }
