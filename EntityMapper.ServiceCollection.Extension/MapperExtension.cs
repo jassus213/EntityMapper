@@ -14,11 +14,11 @@ public static class MapperExtension
         return mapper;
     }
 
-    public static void AddMapperConfiguration<T, TDto>(this IMapperConfigurator entityMapper, Func<T, TDto> configuration) =>
+    public static void AddMapperConfiguration<TSource, TDestination>(this IMapperConfigurator entityMapper, Func<TSource, TDestination> configuration) =>
         entityMapper.AddConfiguration(configuration);
 
-    public static void AddDisposableMapperConfiguration<T, TDto>(this IMapperConfigurator entityMapper,
-        Func<T, TDto> configurationFunc) => entityMapper.AddDisposableConfiguration(configurationFunc);
+    public static void AddDisposableMapperConfiguration<TSource, TDestination>(this IMapperConfigurator entityMapper,
+        Func<TSource, TDestination> configurationFunc) => entityMapper.AddDisposableConfiguration(configurationFunc);
 
     public static void AddAsyncMapperConfiguration<TSource, TDestination>(this IMapperConfigurator entityMapper,
         Func<TSource, Task<TDestination>> configuration) =>

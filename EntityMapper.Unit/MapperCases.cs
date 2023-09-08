@@ -3,6 +3,7 @@ using Entity.Unit.Entities.StrangeCases;
 using EntityMapper.Interfaces;
 using EntityMapper.ServiceCollection.Extension;
 using Microsoft.Extensions.DependencyInjection;
+using EntityMapper = EntityMapper.EntityMapper;
 
 namespace Entity.Unit;
 
