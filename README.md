@@ -1,5 +1,5 @@
 # EntityMapper Documentation
-![Static Badge](https://img.shields.io/badge/latest_version-1.1.1-blue) ![Static Badge](https://img.shields.io/badge/license-MIT-green)
+![Static Badge](https://img.shields.io/badge/latest_version-1.2.1-blue) ![Static Badge](https://img.shields.io/badge/license-MIT-green)
 ## Introducion
 EntityMapper is a powerful and flexible object-to-object mapping library for .NET applications. It simplifies the process of mapping one object's properties to another, allowing you to focus on writing clean and maintainable code.
 This documentation provides a detailed guide on how to use EntityMapper in your .NET projects. It covers the basic setup, configuration, mapping, and integration with the `ServiceCollection`.
@@ -59,6 +59,23 @@ entityMapper.AddDisposableMapperConfiguration<User, UserDto>((user) => new UserD
 });
 ```
 In this code snippet, we define a mapping from the User class to the UserDto class. The unique aspect is that this mapping is treated as disposable. Once the mapping has been used (typically after the first request), AutoMapper automatically disposes of it, freeing up any resources associated with it.
+## Asynchronous Configuration
+AutoMapper provides the capability to define asynchronous mapping functions, allowing you to perform asynchronous operations during the mapping process. This is achieved by using asynchronous delegates (lambda expressions) in the `AddAsyncMapperConfiguration` method. Let's look at an example of using asynchronous configuration:
+```c#
+entityMapper.AddAsyncMapperConfiguration<User, UserDto>(async (user) =>
+{
+    // Perform an asynchronous operation (e.g., delay)
+    await Task.Delay(500);
+
+    // Create a UserDtoStrange object with asynchronously retrieved data
+    return new UserDto()
+    {
+        Id = user.Id,
+        FullName = $"{user.Name} {user.LastName}"
+    };
+});
+```
+In this example, we create an asynchronous mapping configuration between the UserStrange and UserDtoStrange types. Inside the lambda expression, we use the async keyword to define an asynchronous mapping function. Within the mapping function, we perform an asynchronous operation, such as Task.Delay, to introduce an artificial delay of 500 milliseconds. Then, we create a UserDtoStrange object with data retrieved asynchronously.
 
 ## Mapping Objects
 Once you have configured EntityMapper, you can easily map objects using the Map method.
